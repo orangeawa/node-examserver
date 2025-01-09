@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import pool from '../config/db';
+import { successResponse } from '../utils/response';
 
 const router: Router = Router();
 
@@ -7,7 +8,7 @@ const router: Router = Router();
 router.get('/', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM exam_list');
-    res.json(rows);
+    res.json(successResponse(rows));
   } catch (error) {
     res.status(500).json({ message: '获取考试列表失败', error });
   }
