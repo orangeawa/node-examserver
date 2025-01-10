@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import pool from '../config/db';
-import { successResponse } from '../utils/response';
+import { errorResponse, successResponse } from '../utils/response';
 
 const router: Router = Router();
 
@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
     const [rows] = await pool.query('SELECT * FROM exam_list');
     res.json(successResponse(rows));
   } catch (error) {
-    res.status(500).json({ message: '获取考试列表失败', error });
+    res.json(errorResponse('获取考试列表失败'));
   }
 });
 
@@ -22,9 +22,9 @@ router.post('/', async (req, res) => {
       'INSERT INTO exam_list (name, time, duration) VALUES (?, ?, ?)',
       [name, time, duration]
     );
-    res.status(201).json({ message: '考试添加成功' });
+    res.status(201).json(successResponse(null, `添加${ name }成功`));
   } catch (error) {
-    res.status(500).json({ message: '添加考试失败', error });
+    res.json(errorResponse(`添加考试失败${ error }`));
   }
 });
 
@@ -33,9 +33,9 @@ router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     await pool.query('DELETE FROM exam_list WHERE id = ?', [id]);
-    res.json({ message: '考试删除成功' });
+    res.json(successResponse(null, '删除考试成功'));
   } catch (error) {
-    res.status(500).json({ message: '删除考试失败', error });
+    res.json(errorResponse('删除考试失败'));
   }
 });
 
