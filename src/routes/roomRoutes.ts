@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import pool from '../config/db';
+import { errorResponse, successResponse } from '../utils/response';
 
 const router: Router = Router();
 
@@ -7,9 +8,9 @@ const router: Router = Router();
 router.get('/', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM exam_room_list');
-    res.json(rows);
+    res.json(successResponse(rows, '获取考场列表成功'));
   } catch (error) {
-    res.status(500).json({ message: '获取考场列表失败', error });
+    res.json(errorResponse('获取考场列表失败'));
   }
 });
 
@@ -21,9 +22,9 @@ router.post('/', async (req, res) => {
       'INSERT INTO exam_room_list (name, capacity) VALUES (?, ?)',
       [name, capacity]
     );
-    res.status(201).json({ message: '考场添加成功' });
+    res.json(successResponse(null, '考场添加成功'));
   } catch (error) {
-    res.status(500).json({ message: '添加考场失败', error });
+    res.json(errorResponse('添加考场失败'));
   }
 });
 
