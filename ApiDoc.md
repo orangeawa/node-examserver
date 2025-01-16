@@ -475,6 +475,158 @@
 
 ---
 
+## 考试安排(ExamSchedule )
+
+### 1. 新增考试安排
+**POST** `/api/exam_schedules`
+
+**请求体：**
+```json
+{
+  "exam_id": "number",      // 考试ID（必填）
+  "class_id": "number",      // 班级ID（必填）
+  "room_id": "number",      // 考场ID（必填）
+  "seat_number": "number",  // 座位号（必填）
+  "student_id": "number",    // 学生ID（必填）
+}
+```
+
+**返回：**
+```json
+{
+  "code": 200,
+  "message": "考试安排创建成功",
+  "data": null
+}
+```
+
+---
+
+### 2. 获取考试安排
+**GET** `/api/exam_schedules`
+
+**请求参数：**
+- `pageNum`：页码（必填，默认：1）
+- `pageSize`：每页数量（必填，默认：10）
+- `exam_id`：考试ID（非必填）
+- `class_id`：班级ID（非必填）
+- `room_id`：考场ID（非必填）
+- `student_id`：学生ID（非必填）
+
+**返回：**
+- **成功 (201)：**
+```json
+{
+  "code": 201,
+  "message": "success",
+  "data": [
+    {
+      "id": 1,
+      "exam_id": 1,
+      "class_id": 1,
+      "room_id": 1,
+      "seat_number": 12,
+      "student_id": 1
+    }
+  ],
+  "total": 10 // 总条数
+}
+```
+
+---
+
+### 3. 更新考试安排
+**PUT** `/api/exam_schedules/:id`
+
+**请求体：**
+```json
+{
+  "exam_id": "number",      // 考试ID（可选）
+  "class_id": "number",      // 班级ID（可选）
+  "room_id": "number",      // 考场ID（可选）
+  "seat_number": "number",  // 座位号（可选）
+  "student_id": "number",    // 学生ID（可选）
+}
+```
+
+**返回：**
+- **成功 (200)：**
+```json
+{
+  "code": 200,
+  "message": "考试安排更新成功",
+  "data": null
+}
+```
+- **错误 (404)：**
+```json
+{
+  "code": 404,
+  "message": "考试安排未找到",
+  "data": null
+}
+```
+
+---
+
+### 4. 删除考试安排
+**DELETE** `/api/exam_schedules/:id`
+
+**路径参数：**
+- `id`：要删除的考试安排 ID。
+
+**返回：**
+- **成功 (200)：**
+```json
+{
+  "code": 200,
+  "message": "考试安排删除成功",
+  "data": null
+}
+```
+- **错误 (404)：**
+```json
+{
+  "code": 404,
+  "message": "考试安排未找到",
+  "data": null
+}
+```
+
+---
+
+### 5. 批量创建考试安排
+**POST** `/api/exam_schedules/batch`
+
+**请求体：**
+```json
+{
+  "exam_id": "number",      // 考试ID（必填）
+  "class_ids": "number[]",  // 班级ID数组（必填）
+  "room_ids": "number[]",   // 考场ID数组（必填）
+}
+```
+
+**返回：**
+- **成功 (200)：**
+```json
+{
+  "code": 200,
+  "message": "批量创建考试安排成功",
+  "data": null
+}
+```
+- **错误 (400)：**
+```json
+{
+  "code": 400,
+  "message": "考场容量不足",
+  "data": null
+}
+```
+
+---
+
 # 备注
 - 所有时间戳均应为 ISO 8601 格式。
 - 验证错误将始终返回 `400` 状态码，并附带描述性 `message`。
