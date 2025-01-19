@@ -40,7 +40,7 @@ export class ClassController {
       await this.classService.addClass(class_code);
       res.json(successResponse(null, '新增班级成功'));
     } catch (error) {
-      res.json(errorResponse('新增班级失败'));
+      res.json(errorResponse((error as Error).message));
     }
   };
 
@@ -74,4 +74,19 @@ export class ClassController {
       res.json(errorResponse('删除班级失败'));
     }
   };
+
+  /**
+   * 通过学生表更新班级表人数信息
+   * @param req 
+   * @param res 
+   */
+  updateClassStudentCount = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      await this.classService.updateClassStudentCount(Number(id));
+      res.json(successResponse(null, '更新班级人数成功'));
+    } catch (error) {
+      res.json(errorResponse((error as Error).message));
+    }
+  }
 }

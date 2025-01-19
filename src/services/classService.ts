@@ -56,7 +56,7 @@ export class ClassService {
   /**
    * 根据学生表更新班级人数
    */
-  // async updateClassTotalStudents() {
-  //   return await this.classRepository.update();
-  // }
+  async updateClassStudentCount(id: number) {
+    return await this.classRepository.updateClassStudentCount(id);
+  }
 }

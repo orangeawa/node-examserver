@@ -1,4 +1,4 @@
-export const successResponse = (data: any, message: string = "success", code: number = 201, total: number = 0) => {
+export const successResponse = (data: any, message: string = "success", code: number = 200, total: number = 0) => {
   return {
     code,
     message,

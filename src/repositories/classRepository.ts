@@ -66,4 +66,13 @@ export class ClassRepository {
     const [result] = await pool.query('DELETE FROM Class WHERE id = ?', [id]);
     return result;
   }
+
+  /**
+   * 通过学生表更新班级表人数信息
+   * @returns 
+   */
+  async updateClassStudentCount(id: number) {
+    const [result] = await pool.query('UPDATE Class SET total_students = (SELECT COUNT(*) FROM Student WHERE class_id = ?) WHERE id = ?', [id, id]);
+    return result;
+  }
 }
