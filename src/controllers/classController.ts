@@ -89,4 +89,19 @@ export class ClassController {
       res.json(errorResponse((error as Error).message));
     }
   }
+
+  /**
+   * 批量添加班级
+   * @param req 
+   * @param res 
+   */
+  batchAddClass = async (req: Request, res: Response) => {
+    try {
+      const classCodes = req.body as string[];
+      await this.classService.batchAddClass(classCodes);
+      res.json(successResponse(null, '批量添加班级成功'));
+    } catch (error) {
+      res.json(errorResponse((error as Error).message));
+    }
+  }
 }

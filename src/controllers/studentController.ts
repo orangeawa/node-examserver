@@ -64,4 +64,14 @@ export class StudentController {
       res.json(errorResponse((error as Error).message));
     }
   };
+
+  batchAddStudent = async (req: Request, res: Response) => {
+    try {
+      const students = req.body
+      await this.studentService.batchAddStudent(students);
+      res.json(successResponse(null, '批量添加学生成功'));
+    } catch (error) {
+      res.json(errorResponse((error as Error).message));
+    }
+  }
 } 

@@ -46,8 +46,29 @@ export class StudentService {
     return await this.studentRepository.update(id, studentData);
   }
 
+  /**
+   * 删除学生
+   * @param id 
+   * @returns 
+   */
   async deleteStudent(id: number) {
     return await this.studentRepository.delete(id);
+  }
+
+  /**
+   * 批量导入学生
+   * @param students 
+   * @returns 
+   */
+  async batchAddStudent(students: Omit<Student, 'id'>[]) {
+    console.time;
+    for (const student of students) {
+      if (!this.validateStudent(student)) {
+        throw new Error('学生信息无效');
+      }
+    }
+    console.timeEnd;
+    return await this.studentRepository.batchAddStudent(students);
   }
 
   /**

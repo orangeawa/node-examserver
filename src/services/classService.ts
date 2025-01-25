@@ -52,11 +52,19 @@ export class ClassService {
     return await this.classRepository.delete(id);
   }
 
-  //todo: 根据学生表更新班级人数功能
   /**
    * 根据学生表更新班级人数
    */
   async updateClassStudentCount(id: number) {
     return await this.classRepository.updateClassStudentCount(id);
+  }
+
+  /**
+   * 批量添加班级
+   * @param classCodes 
+   * @returns 
+   */
+  async batchAddClass(classCodes: string[]) {
+    return await this.classRepository.batchAddClass(classCodes);
   }
 }

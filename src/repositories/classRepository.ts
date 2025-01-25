@@ -75,4 +75,14 @@ export class ClassRepository {
     const [result] = await pool.query('UPDATE Class SET total_students = (SELECT COUNT(*) FROM Student WHERE class_id = ?) WHERE id = ?', [id, id]);
     return result;
   }
+
+  /**
+   * 批量添加班级
+   * @param classCodes 
+   * @returns 
+   */
+  async batchAddClass(classCodes: string[]) {
+    const [result] = await pool.query('INSERT INTO Class (class_code, total_students) VALUES ?', [classCodes.map(code => [code, 0])]);
+    return result;
+  }
 }

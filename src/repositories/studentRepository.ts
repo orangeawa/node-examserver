@@ -51,4 +51,11 @@ export class StudentRepository {
     const [result] = await pool.query('DELETE FROM Student WHERE id = ?', [id]);
     return result;
   }
+
+  async batchAddStudent(students: Omit<Student, 'id'>[]){
+    const sql = 'INSERT INTO Student (student_id, student_name, class_id) VALUES ?';
+    const values = students.map(student => [student.student_id, student.student_name, student.class_id]);
+    const [result] = await pool.query(sql, [values]);
+    return result;
+  }
 } 
