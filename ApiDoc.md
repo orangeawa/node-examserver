@@ -32,6 +32,7 @@
 ```json
 {
   "class_code": "string",      // 班级代码（必填，最大长度：10）
+  "total_students": number     // 班级人数（必填）
 }
 ```
 
@@ -39,7 +40,7 @@
 ```json
 {
   "code": 200,
-  "message": "新增班级**成功",
+  "message": "新增班级成功",
   "data": null
 }
 ```
@@ -54,10 +55,10 @@
 - `total_students`：班级学生总数（非必填）
 
 **返回：**
-- **成功 (201)：**
+- **成功 (200)：**
 ```json
 {
-  "code": 201,
+  "code": 200,
   "message": "success",
   "data": [
     {
@@ -77,14 +78,15 @@
 ```json
 {
   "class_code": "string",      // 班级代码（必填，最大长度：10）
+  "total_students": number     // 班级人数（必填）
 }
-``` 
+```
 
 **返回：**
 ```json
 {
   "code": 200,
-  "message": "班级**信息更新成功",
+  "message": "班级信息更新成功",
   "data": null
 }
 ```
@@ -95,7 +97,7 @@
 **请求体：**
 ```json
 {
-  "class_code": "string",      // 班级代码（若为空，则刷新所有班级）
+  "class_code": "string"      // 班级代码（若为空，则刷新所有班级）
 }
 ```
 
@@ -118,11 +120,46 @@
 ```json
 {
   "code": 200,
-  "message": "班级**删除成功",
+  "message": "班级删除成功",
   "data": null
 }
 ```
 
+### 6. 批量新增班级
+**POST** `/api/classes/batch_add`
+
+**请求体：**
+```json
+[
+  "string", // 班级代码（必填）（班级人数默认0）
+]
+```
+
+**返回：**
+```json
+{
+  "code": 200,
+  "message": "批量新增班级成功",
+  "data": null
+}
+```
+
+### 7. 更新班级学生总数
+**GET** `/api/classes/update_student_count/:id`
+
+**路径参数：**
+- `id`：要更新学生总数的班级 ID。
+
+**返回：**
+```json
+{
+  "code": 200,
+  "message": "班级学生总数更新成功",
+  "data": null
+}
+```
+
+---
 
 ## 学生
 
@@ -134,7 +171,7 @@
 {
   "student_id": "string",      // 学生学号（必填，最大长度：10）
   "student_name": "string",    // 学生姓名（必填，最大长度：26）
-  "class_id": "string",  // 学生班级（必填，最大长度：10）
+  "class_id": number           // 学生班级ID（必填，最大长度：10）
 }
 ```
 
@@ -142,7 +179,7 @@
 ```json
 {
   "code": 200,
-  "message": "新增学生**成功",
+  "message": "新增学生成功",
   "data": null
 }
 ```
@@ -155,13 +192,13 @@
 - `pageSize`：每页数量（必填，默认：10）
 - `student_id`：学生学号（非必填，最大长度：10）
 - `student_name`：学生姓名（非必填，最大长度：26）
-- `class_id`：学生班级（非必填，最大长度：10）
+- `class_id`：学生班级ID（非必填）
 
 **返回：**
-- **成功 (201)：**
+- **成功 (200)：**
 ```json
 {
-  "code": 201,
+  "code": 200,
   "message": "success",
   "data": [
     {
@@ -183,7 +220,7 @@
 {
   "student_id": "string",      // 学生学号（必填，最大长度：10）
   "student_name": "string",    // 学生姓名（必填，最大长度：26）
-  "class_id": "string",  // 学生班级（必填，最大长度：10）
+  "class_id": number           // 学生班级ID（必填，最大长度：10）
 }
 ```
 
@@ -191,7 +228,7 @@
 ```json
 {
   "code": 200,
-  "message": "学生**信息更新成功",
+  "message": "学生信息更新成功",
   "data": null
 }
 ```
@@ -206,10 +243,36 @@
 ```json
 {
   "code": 200,
-  "message": "学生**删除成功",
+  "message": "学生删除成功",
   "data": null
 }
 ```
+
+### 5. 批量新增学生
+**POST** `/api/students/batch_add`
+
+**请求体：**
+```json
+[
+  {
+    "student_id": "string",      // 学生学号（必填，最大长度：10）
+    "student_name": "string",    // 学生姓名（必填，最大长度：26）
+    "class_id": number           // 学生班级ID（必填）
+  },
+  // 更多学生对象
+]
+```
+
+**返回：**
+```json
+{
+  "code": 200,
+  "message": "批量新增学生成功",
+  "data": null
+}
+```
+
+---
 
 ## 考试
 
@@ -220,9 +283,9 @@
 ```json
 {
   "course_name": "string",      // 考试课程名称（必填，最大长度：26）
-  "exam_time": "datetime",    // 考试时间，ISO 格式（必填）
-  "duration": number,       // 考试时长，单位为分钟（必填）
-  "description": "string",    // 考试描述（非必填，最大长度：255）
+  "exam_time": "datetime",      // 考试时间，ISO 格式（必填）
+  "duration": number,           // 考试时长，单位为分钟（必填）
+  "description": "string"       // 考试描述（非必填，最大长度：255）
 }
 ```
 
@@ -244,8 +307,6 @@
 }
 ```
 
----
-
 ### 2. 获取考试
 **GET** `/api/exams`
 
@@ -258,10 +319,10 @@
 - `description`：考试描述（非必填，最大长度：255）
 
 **返回：**
-- **成功 (201)：**
+- **成功 (200)：**
 ```json
 {
-  "code": 201,
+  "code": 200,
   "message": "success",
   "data": [
     {
@@ -278,7 +339,8 @@
       "duration": 90,
       "description": "这是一场英语考试"
     }
-  ]
+  ],
+  "total": 10 // 总条数
 }
 ```
 - **错误 (500)：**
@@ -290,8 +352,6 @@
 }
 ```
 
----
-
 ### 3. 更新考试
 **PUT** `/api/exams/:id`
 
@@ -301,10 +361,10 @@
 **请求体：**
 ```json
 {
-  "course_name": "string",      // 新的考试名称（可选）
-  "exam_time": "datetime",    // 新的考试时间，ISO 格式（可选）
-  "duration": number,       // 新的考试时长，单位为分钟（可选）
-  "description": "string",    // 新的考试描述（非必填，最大长度：255）
+  "course_name": "string",      // 新的考试名称（可选，最大长度：26）
+  "exam_time": "datetime",      // 新的考试时间，ISO 格式（可选）
+  "duration": number,           // 新的考试时长，单位为分钟（可选）
+  "description": "string"       // 新的考试描述（非必填，最大长度：255）
 }
 ```
 
@@ -317,14 +377,6 @@
   "data": null
 }
 ```
-- **错误 (404)：**
-```json
-{
-  "code": 404,
-  "message": "考试未找到",
-  "data": null
-}
-```
 - **错误 (400)：**
 ```json
 {
@@ -333,8 +385,14 @@
   "data": null
 }
 ```
-
----
+- **错误 (404)：**
+```json
+{
+  "code": 404,
+  "message": "考试未找到",
+  "data": null
+}
+```
 
 ### 4. 删除考试
 **DELETE** `/api/exams/:id`
@@ -371,7 +429,7 @@
 ```json
 {
   "room_name": "string",      // 考场名称（必填，最大长度：26）
-  "capacity": number,    // 考场容量（必填）
+  "capacity": number          // 考场容量（必填）
 }
 ```
 
@@ -379,7 +437,7 @@
 ```json
 {
   "code": 200,
-  "message": "考场**创建成功",
+  "message": "考场创建成功",
   "data": null
 }
 ```
@@ -394,10 +452,10 @@
 - `capacity`：考场容量（非必填）
 
 **返回：**
-- **成功 (201)：**
+- **成功 (200)：**
 ```json
 {
-  "code": 201,
+  "code": 200,
   "message": "success",
   "data": [
     {
@@ -405,7 +463,8 @@
       "room_name": "考场1",
       "capacity": 100
     }
-  ]
+  ],
+  "total": 10 // 总条数
 }
 ```
 
@@ -432,19 +491,19 @@
   "data": null
 }
 ```
-- **错误 (404)：**
-```json
-{
-  "code": 404,
-  "message": "考场未找到",
-  "data": null
-}
-```
 - **错误 (400)：**
 ```json
 {
   "code": 400,
   "message": "请求数据无效",
+  "data": null
+}
+```
+- **错误 (404)：**
+```json
+{
+  "code": 404,
+  "message": "考场未找到",
   "data": null
 }
 ```
@@ -475,7 +534,7 @@
 
 ---
 
-## 考试安排(ExamSchedule )
+## 考试安排（ExamSchedule）
 
 ### 1. 新增考试安排
 **POST** `/api/exam_schedules`
@@ -483,11 +542,11 @@
 **请求体：**
 ```json
 {
-  "exam_id": "number",      // 考试ID（必填）
-  "class_id": "number",      // 班级ID（必填）
-  "room_id": "number",      // 考场ID（必填）
-  "seat_number": "number",  // 座位号（必填）
-  "student_id": "number",    // 学生ID（必填）
+  "exam_id": number,          // 考试ID（必填）
+  "class_id": number,         // 班级ID（必填）
+  "room_id": number,          // 考场ID（必填）
+  "seat_number": number,      // 座位号（必填）
+  "student_id": number        // 学生ID（必填）
 }
 ```
 
@@ -499,8 +558,6 @@
   "data": null
 }
 ```
-
----
 
 ### 2. 获取考试安排
 **GET** `/api/exam_schedules`
@@ -514,10 +571,10 @@
 - `student_id`：学生ID（非必填）
 
 **返回：**
-- **成功 (201)：**
+- **成功 (200)：**
 ```json
 {
-  "code": 201,
+  "code": 200,
   "message": "success",
   "data": [
     {
@@ -526,26 +583,61 @@
       "class_id": 1,
       "room_id": 1,
       "seat_number": 12,
-      "student_id": 1
+      "student_id": 1,
+      "course_name": "数学考试",
+      "class_code": "04F2111",
+      "room_name": "考场1",
+      "student_name": "张三"
     }
   ],
   "total": 10 // 总条数
 }
 ```
 
----
-
-### 3. 更新考试安排
-**PUT** `/api/exam_schedules/:id`
+### 3. 批量创建考试安排
+**POST** `/api/exam_schedules/batch`
 
 **请求体：**
 ```json
 {
-  "exam_id": "number",      // 考试ID（可选）
-  "class_id": "number",      // 班级ID（可选）
-  "room_id": "number",      // 考场ID（可选）
-  "seat_number": "number",  // 座位号（可选）
-  "student_id": "number",    // 学生ID（可选）
+  "exam_id": number,          // 考试ID（必填）
+  "class_ids": number[],      // 班级ID数组（必填）
+  "room_ids": number[]        // 考场ID数组（必填）
+}
+```
+
+**返回：**
+- **成功 (200)：**
+```json
+{
+  "code": 200,
+  "message": "批量创建考试安排成功",
+  "data": null
+}
+```
+- **错误 (400)：**
+```json
+{
+  "code": 400,
+  "message": "考场容量不足",
+  "data": null
+}
+```
+
+### 4. 更新考试安排
+**PUT** `/api/exam_schedules/:id`
+
+**路径参数：**
+- `id`：要更新的考试安排 ID。
+
+**请求体：**
+```json
+{
+  "exam_id": number,          // 考试ID（可选）
+  "class_id": number,         // 班级ID（可选）
+  "room_id": number,          // 考场ID（可选）
+  "seat_number": number,      // 座位号（可选）
+  "student_id": number        // 学生ID（可选）
 }
 ```
 
@@ -558,6 +650,14 @@
   "data": null
 }
 ```
+- **错误 (400)：**
+```json
+{
+  "code": 400,
+  "message": "请求数据无效",
+  "data": null
+}
+```
 - **错误 (404)：**
 ```json
 {
@@ -567,9 +667,7 @@
 }
 ```
 
----
-
-### 4. 删除考试安排
+### 5. 删除考试安排
 **DELETE** `/api/exam_schedules/:id`
 
 **路径参数：**
@@ -595,41 +693,11 @@
 
 ---
 
-### 5. 批量创建考试安排
-**POST** `/api/exam_schedules/batch`
-
-**请求体：**
-```json
-{
-  "exam_id": "number",      // 考试ID（必填）
-  "class_ids": "number[]",  // 班级ID数组（必填）
-  "room_ids": "number[]",   // 考场ID数组（必填）
-}
-```
-
-**返回：**
-- **成功 (200)：**
-```json
-{
-  "code": 200,
-  "message": "批量创建考试安排成功",
-  "data": null
-}
-```
-- **错误 (400)：**
-```json
-{
-  "code": 400,
-  "message": "考场容量不足",
-  "data": null
-}
-```
-
----
-
 # 备注
 - 所有时间戳均应为 ISO 8601 格式。
 - 验证错误将始终返回 `400` 状态码，并附带描述性 `message`。
-- （如果后续添加身份验证功能）未授权访问将返回 `401` 状态码。
+- 未授权访问将返回 `401` 状态码。
+- 未找到资源将返回 `404` 状态码。
+- 服务器内部错误将返回 `500` 状态码。
 
 
