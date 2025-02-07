@@ -208,4 +208,29 @@ export class ExamScheduleRepository {
 
   }
 
+  /**
+   * 检查学生在指定考试时间段是否已有安排
+   * @param exam_id 考试ID
+   * @param student_ids 学生ID数组
+   * @returns 已有安排的学生列表 [{student_id, student_name, course_name, exam_time}]
+   */
+  async checkStudentTimeConflict(exam_id: number, student_ids: number[]): Promise<any[]> {
+    const [rows] = await pool.query(
+      `SELECT DISTINCT 
+        s.id as student_id,
+        s.student_name,
+        e2.course_name,
+        e2.exam_time
+      FROM ExamSchedule es
+      JOIN Student s ON es.student_id = s.id
+      JOIN Exam e1 ON es.exam_id = e1.id
+      JOIN Exam e2 ON e2.id = ?
+      WHERE s.id IN (?)
+      AND e1.exam_time BETWEEN e2.exam_time 
+      AND DATE_ADD(e2.exam_time, INTERVAL e2.duration MINUTE)`,
+      [exam_id, student_ids]
+    );
+    return rows as any[];
+  }
+
 } 

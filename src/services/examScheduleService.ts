@@ -116,23 +116,37 @@ export class ExamScheduleService {
       throw new Error("考试不存在");
     }
 
+    // 所有班级的学生收集到一个数组中
+    const students = await this.examScheduleRepository.getStudentsByClassIds(batchData.class_ids);
+    
+    // 检查时间冲突
+    const conflictStudents = await this.examScheduleRepository.checkStudentTimeConflict(
+      batchData.exam_id,
+      students.map(s => s.id)
+    );
+    
+    if (conflictStudents.length > 0) {
+      const details = conflictStudents.map(s => 
+        `学生 ${s.student_name} 在该时间段已安排考试 ${s.course_name}`
+      ).join('\n');
+      throw new Error(`存在时间冲突:\n${details}`);
+    }
+
     // 列出当前考试时间段所有考场座位信息
     const availableRooms = await this.examScheduleRepository.getAvailableRooms(batchData.exam_id);
 
-    // 所有班级的学生收集到一个数组中
-    const students = await this.examScheduleRepository.getStudentsByClassIds(batchData.class_ids);
-    console.log(students.length);
-
-    let roomIndex = 0;
+    // 检查总座位数是否足够
+    const totalAvailableSeats = availableRooms.reduce((sum, room) => sum + room.remaining_seats, 0);
+    if (totalAvailableSeats < students.length) {
+      throw new Error(`可用座位数不足，需要 ${students.length} 个座位，但只有 ${totalAvailableSeats} 个可用座位`);
+    }
 
     // 用于存储最终生成的考试安排对象
     const schedules: Omit<ExamSchedule, "id">[] = [];
-
     let studentIndex = 0;
 
     for (const room of availableRooms) {
-      // 当前考场开始的座位号
-      let seatIndex = room.assigned_seats + 1
+      let seatIndex = room.assigned_seats + 1;
 
       while (seatIndex <= room.total_seats && studentIndex < students.length) {
         const student = students[studentIndex];
@@ -149,14 +163,11 @@ export class ExamScheduleService {
         studentIndex++;
       }
       
-      // 如果所有学生都已安排，则跳出循环
       if (studentIndex >= students.length) {
         break;
       }
     }
     
-    // 处理批量创建考试安排事件
     return await this.examScheduleRepository.batchCreate(schedules);
-
   }
 }

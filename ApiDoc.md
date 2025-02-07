@@ -571,7 +571,6 @@
 - `student_id`：学生ID（非必填）
 
 **返回：**
-- **成功 (200)：**
 ```json
 {
   "code": 200,
@@ -584,17 +583,37 @@
       "room_id": 1,
       "seat_number": 12,
       "student_id": 1,
-      "course_name": "数学考试",
-      "class_code": "04F2111",
-      "room_name": "考场1",
-      "student_name": "张三"
+      "course_name": "数学考试",    // 新增：考试名称
+      "class_code": "04F2111",     // 新增：班级代码
+      "room_name": "考场1",         // 新增：考场名称
+      "student_name": "张三"        // 新增：学生姓名
     }
   ],
-  "total": 10 // 总条数
+  "total": 10
 }
 ```
 
-### 3. 批量创建考试安排
+### 3. 根据考试ID和班级ID批量创建考试安排
+**POST** `/api/exam_schedules/batch_by_exam_and_class`
+
+**请求体：**
+```json
+{
+  "exam_id": number,          // 考试ID（必填）
+  "class_ids": number[]       // 班级ID数组（必填）
+}
+```
+
+**返回：**
+```json
+{
+  "code": 200,
+  "message": "批量创建考试安排成功",
+  "data": null
+}
+```
+
+### 4. 根据考试ID、班级ID和考场ID批量创建考试安排
 **POST** `/api/exam_schedules/batch`
 
 **请求体：**
@@ -607,7 +626,6 @@
 ```
 
 **返回：**
-- **成功 (200)：**
 ```json
 {
   "code": 200,
@@ -615,20 +633,12 @@
   "data": null
 }
 ```
-- **错误 (400)：**
-```json
-{
-  "code": 400,
-  "message": "考场容量不足",
-  "data": null
-}
-```
 
-### 4. 更新考试安排
+### 5. 更新考试安排
 **PUT** `/api/exam_schedules/:id`
 
 **路径参数：**
-- `id`：要更新的考试安排 ID。
+- `id`：要更新的考试安排 ID
 
 **请求体：**
 ```json
@@ -642,7 +652,6 @@
 ```
 
 **返回：**
-- **成功 (200)：**
 ```json
 {
   "code": 200,
@@ -650,43 +659,18 @@
   "data": null
 }
 ```
-- **错误 (400)：**
-```json
-{
-  "code": 400,
-  "message": "请求数据无效",
-  "data": null
-}
-```
-- **错误 (404)：**
-```json
-{
-  "code": 404,
-  "message": "考试安排未找到",
-  "data": null
-}
-```
 
-### 5. 删除考试安排
+### 6. 删除考试安排
 **DELETE** `/api/exam_schedules/:id`
 
 **路径参数：**
-- `id`：要删除的考试安排 ID。
+- `id`：要删除的考试安排 ID
 
 **返回：**
-- **成功 (200)：**
 ```json
 {
   "code": 200,
   "message": "考试安排删除成功",
-  "data": null
-}
-```
-- **错误 (404)：**
-```json
-{
-  "code": 404,
-  "message": "考试安排未找到",
   "data": null
 }
 ```
