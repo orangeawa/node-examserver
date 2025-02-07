@@ -51,23 +51,7 @@ export class ExamScheduleController {
     }
   };
 
-  /**
-   * 批量创建考试安排
-   */
-  batchCreateSchedules = async (req: Request, res: Response) => {
-    try {
-      const { exam_id, class_ids, room_ids } = req.body;
-      await this.examScheduleService.batchCreateSchedules({
-        exam_id: Number(exam_id),
-        class_ids: class_ids.map(Number),
-        room_ids: room_ids.map(Number)
-      });
-      res.json(successResponse(null, '批量创建考试安排成功'));
-    } catch (error) {
-      res.json(errorResponse((error as Error).message));
-    }
-  };
-
+  
   /**
    * 更新考试安排
    */
@@ -87,17 +71,53 @@ export class ExamScheduleController {
       res.json(errorResponse((error as Error).message));
     }
   };
-
+  
   /**
    * 删除考试安排
-   */
-  deleteSchedule = async (req: Request, res: Response) => {
-    try {
-      const { id } = req.params;
-      await this.examScheduleService.deleteSchedule(Number(id));
-      res.json(successResponse(null, '考试安排删除成功'));
+  */
+ deleteSchedule = async (req: Request, res: Response) => {
+   try {
+     const { id } = req.params;
+     await this.examScheduleService.deleteSchedule(Number(id));
+     res.json(successResponse(null, '考试安排删除成功'));
     } catch (error) {
       res.json(errorResponse((error as Error).message));
     }
   };
+
+
+  // **========================== 额外功能 ==========================**
+
+  /**
+   * 根据'考试ID'、'班级ID'和'考场ID'批量创建考试安排 （多了个考场列表可以自定义要选的考场）
+   */
+  batchCreateSchedules = async (req: Request, res: Response) => {
+    try {
+      const { exam_id, class_ids, room_ids } = req.body;
+      await this.examScheduleService.batchCreateSchedules({
+        exam_id: Number(exam_id),
+        class_ids: class_ids.map(Number),
+        room_ids: room_ids.map(Number)
+      });
+      res.json(successResponse(null, '批量创建考试安排成功'));
+    } catch (error) {
+      res.json(errorResponse((error as Error).message));
+    }
+  };
+
+  /**
+   * 根据'考试ID'和'班级ID'批量创建考试安排
+   */
+  batchCreateSchedulesByExamAndClass = async (req: Request, res: Response) => {
+    try {
+      const { exam_id, class_ids } = req.body;
+      await this.examScheduleService.batchCreateSchedulesByExamAndClass({
+        exam_id: Number(exam_id),
+        class_ids: class_ids.map(Number)
+      });
+      res.json(successResponse(null, '批量创建考试安排成功'));
+    } catch (error) {
+      res.json(errorResponse((error as Error).message));
+    }
+  }
 } 

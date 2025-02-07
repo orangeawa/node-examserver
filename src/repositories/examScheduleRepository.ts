@@ -1,5 +1,5 @@
 import pool from '../config/db';
-import { ExamSchedule } from '../types/examSchedule';
+import { BatchCreateScheduleByExamAndClass, ExamSchedule } from '../types/examSchedule';
 
 export class ExamScheduleRepository {
   /**
@@ -59,16 +59,25 @@ export class ExamScheduleRepository {
 
   /**
    * 批量创建考试安排
+   * @param schedules 考试安排数据
    */
   async batchCreate(schedules: Omit<ExamSchedule, 'id'>[]) {
     const connection = await pool.getConnection();
     try {
       await connection.beginTransaction();
 
-      for (const schedule of schedules) {
+      // 将数据分批处理,每批1000条
+      const batchSize = 1000;
+      for (let i = 0; i < schedules.length; i += batchSize) {
+        const batch = schedules.slice(i, i + batchSize);
+        
+        // 构建批量插入SQL
+        const values = batch.map(schedule => 
+          `(${schedule.exam_id}, ${schedule.class_id}, ${schedule.room_id}, ${schedule.seat_number}, ${schedule.student_id})`
+        ).join(',');
+        
         await connection.query(
-          'INSERT INTO ExamSchedule (exam_id, class_id, room_id, seat_number, student_id) VALUES (?, ?, ?, ?, ?)',
-          [schedule.exam_id, schedule.class_id, schedule.room_id, schedule.seat_number, schedule.student_id]
+          `INSERT INTO ExamSchedule (exam_id, class_id, room_id, seat_number, student_id) VALUES ${values}`
         );
       }
 
@@ -139,4 +148,64 @@ export class ExamScheduleRepository {
     const [students] = await pool.query('SELECT id FROM Student WHERE class_id = ?', [class_id]);
     return students as any[];
   }
+  
+  /**
+   * 获取多个班级的学生列表
+   * @param class_ids 班级ID数组
+   */
+  async getStudentsByClassIds(class_ids: number[]): Promise<{id: number, student_id: string, student_name: string, class_id: number}[]> {
+    const [students] = await pool.query(
+      'SELECT id, student_id, student_name, class_id FROM Student WHERE class_id IN (?)', 
+      [class_ids]
+    );
+    return students as any[];
+  }
+
+  /**
+   * 获取考试信息
+   * @param exam_id 考试ID
+   * @returns 考试信息
+   */
+  async getExamById(exam_id: number): Promise<any> {
+    const [rows] = await pool.query('SELECT * FROM Exam WHERE id = ?', [exam_id]);
+    return rows as any[];
+  }
+
+  /**
+   * 列出考场在当前考试时间段的所有座位信息
+   */
+  async getAvailableRooms(exam_id: number): Promise<{id: number, name: string, remaining_seats: number, assigned_seats: number, total_seats: number}[]> {
+    const [rows] = await pool.query(
+      `SELECT
+          er.id as id,
+          er.room_name as name,
+          er.capacity - IFNULL(schedule.assigned_count, 0) AS remaining_seats,
+          IFNULL(schedule.assigned_count, 0) AS assigned_seats,
+          er.capacity as total_seats
+
+      FROM examroom er
+      LEFT JOIN (
+          SELECT
+              es.room_id,
+              COUNT(*) AS assigned_count
+          FROM examschedule es
+          JOIN exam e ON es.exam_id = e.id
+          WHERE (select exam_time from exam where id = ?) BETWEEN e.exam_time AND DATE_ADD(e.exam_time, INTERVAL e.duration MINUTE)
+          GROUP BY es.room_id
+      ) schedule ON er.id = schedule.room_id;`,
+      [exam_id]
+    );
+
+    return rows as any[];
+
+  }
+
+
+  /**
+   * 根据'考试ID'和'班级ID'批量创建考试安排
+   */
+  async batchCreateByExamAndClass(batchData: BatchCreateScheduleByExamAndClass) {
+
+  }
+
 } 

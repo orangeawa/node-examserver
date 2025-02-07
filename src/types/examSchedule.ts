@@ -12,3 +12,8 @@ export interface BatchCreateSchedule {
   class_ids: number[];
   room_ids: number[];
 } 
+
+export interface BatchCreateScheduleByExamAndClass {
+  exam_id: number;
+  class_ids: number[];
+} 
