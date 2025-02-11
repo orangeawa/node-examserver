@@ -120,4 +120,17 @@ export class ExamScheduleController {
       res.json(errorResponse((error as Error).message));
     }
   }
+
+  /**
+   * 获取考试时间段的座位信息
+   */
+  getExamRoomSeats = async (req: Request, res: Response) => {
+    try {
+      const { exam_id } = req.params;
+      const result = await this.examScheduleService.getExamRoomSeats(Number(exam_id));
+      res.json(successResponse(result, 'success', 201));
+    } catch (error) {
+      res.json(errorResponse((error as Error).message));
+    }
+  };
 } 

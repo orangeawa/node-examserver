@@ -191,7 +191,7 @@
 - `pageNum`：页码（必填，默认：1）
 - `pageSize`：每页数量（必填，默认：10）
 - `student_id`：学生学号（非必填，最大长度：10）
-- `student_name`：学生姓名（非必填，最大长度：26）
+- `student_name`：学生姓名（非必填最大长度：26）
 - `class_id`：学生班级ID（非必填）
 
 **返回：**
@@ -671,6 +671,34 @@
 {
   "code": 200,
   "message": "考试安排删除成功",
+  "data": null
+}
+```
+
+### 7. 获取考试时间段的座位信息
+**GET** `/api/exam_schedules/seats/:exam_id`
+
+**路径参数：**
+- `exam_id`：考试ID
+
+**返回：**
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "total_seats": 50,       // 总座位数
+    "remaining_seats": 30    // 剩余座位数
+  }
+}
+```
+
+**错误情况：**
+- 考试不存在时返回：
+```json
+{
+  "code": 400,
+  "message": "考试不存在",
   "data": null
 }
 ```

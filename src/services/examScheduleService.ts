@@ -126,10 +126,15 @@ export class ExamScheduleService {
     );
     
     if (conflictStudents.length > 0) {
-      const details = conflictStudents.map(s => 
-        `学生 ${s.student_name} 在该时间段已安排考试 ${s.course_name}`
-      ).join('\n');
-      throw new Error(`存在时间冲突:\n${details}`);
+      const classIds = [...new Set(students.filter(s => 
+        conflictStudents.some(cs => cs.student_id === s.id)
+      ).map(s => s.class_id))];
+      
+      const studentNames = conflictStudents.map(s => s.student_name);
+      
+      throw new Error(
+        `该时间段内，班级【${classIds.join('、')}】有学生存在时间冲突，影响的学生【${studentNames.join('、')}】`
+      );
     }
 
     // 列出当前考试时间段所有考场座位信息
@@ -169,5 +174,27 @@ export class ExamScheduleService {
     }
     
     return await this.examScheduleRepository.batchCreate(schedules);
+  }
+
+  /**
+   * 获取考试时间段的座位信息
+   */
+  async getExamRoomSeats(exam_id: number) {
+    // 检查考试是否存在
+    const exam = await this.examScheduleRepository.getExamById(exam_id);
+    if (!exam[0]) {
+      throw new Error("考试不存在");
+    }
+
+    const rooms = await this.examScheduleRepository.getAvailableRooms(exam_id);
+    
+    // 计算总数
+    const totalSeats = rooms.reduce((sum, room) => sum + room.total_seats, 0);
+    const availableSeats = rooms.reduce((sum, room) => sum + room.remaining_seats, 0);
+    
+    return {
+      total_seats: totalSeats,      // 总座位数
+      remaining_seats: availableSeats  // 剩余座位数
+    };
   }
 }
