@@ -133,4 +133,17 @@ export class ExamScheduleController {
       res.json(errorResponse((error as Error).message));
     }
   };
+
+  /**
+   * 根据考试id获取考试所有考场安排信息
+   */
+  getExamRooms = async (req: Request, res: Response) => {
+    try {
+      const { exam_id } = req.params;
+      const result = await this.examScheduleService.getExamRoomsSchedule(Number(exam_id));
+      res.json(successResponse(result, 'success', 201));
+    } catch (error) {
+      res.json(errorResponse((error as Error).message));
+    }
+  };
 } 

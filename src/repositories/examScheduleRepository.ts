@@ -70,12 +70,12 @@ export class ExamScheduleRepository {
       const batchSize = 1000;
       for (let i = 0; i < schedules.length; i += batchSize) {
         const batch = schedules.slice(i, i + batchSize);
-        
+
         // 构建批量插入SQL
-        const values = batch.map(schedule => 
+        const values = batch.map(schedule =>
           `(${schedule.exam_id}, ${schedule.class_id}, ${schedule.room_id}, ${schedule.seat_number}, ${schedule.student_id})`
         ).join(',');
-        
+
         await connection.query(
           `INSERT INTO ExamSchedule (exam_id, class_id, room_id, seat_number, student_id) VALUES ${values}`
         );
@@ -148,14 +148,14 @@ export class ExamScheduleRepository {
     const [students] = await pool.query('SELECT id FROM Student WHERE class_id = ?', [class_id]);
     return students as any[];
   }
-  
+
   /**
    * 获取多个班级的学生列表
    * @param class_ids 班级ID数组
    */
   async getStudentsByClassIds(class_ids: number[]): Promise<{id: number, student_id: string, student_name: string, class_id: number}[]> {
     const [students] = await pool.query(
-      'SELECT id, student_id, student_name, class_id FROM Student WHERE class_id IN (?)', 
+      'SELECT id, student_id, student_name, class_id FROM Student WHERE class_id IN (?)',
       [class_ids]
     );
     return students as any[];
@@ -172,7 +172,7 @@ export class ExamScheduleRepository {
   }
 
   /**
-   * 列出考场在当前考试时间段的所有座位信息
+   * 列出考场在当前考试时间段的所有座位信息（剩余座位数，总座位数，已用座位数，考场名）
    */
   async getAvailableRooms(exam_id: number): Promise<{id: number, name: string, remaining_seats: number, assigned_seats: number, total_seats: number}[]> {
     const [rows] = await pool.query(
@@ -233,4 +233,31 @@ export class ExamScheduleRepository {
     return rows as any[];
   }
 
+  /**
+   * 获取考试安排信息
+   * @param id 考试安排ID
+   * @returns {
+   *     classcodes: string,
+   *     num_of_students: number,
+   *     room_name: string,
+   *     exam_name: string,
+   * }
+   */
+    async getExamScheduleInfo(id: number): Promise<{ classes: string, examinees: number, examroom: string, course: string }[]> {
+        const [rows] = await pool.query(
+            `select group_concat(distinct c.class_code separator ',') as classes,
+                    count(*)                                          as examinees,
+                    er.room_name                                      as examroom,
+                    e.course_name                                     as course
+            from examschedule
+                  join examserver.exam e on e.id = examschedule.exam_id
+                  join examserver.class c on c.id = examschedule.class_id
+                  join examserver.examroom er on er.id = examschedule.room_id
+            where
+             exam_id = ?
+            group by examschedule.room_id;`,
+            [id]
+        );
+        return rows as any[];
+    }
 } 

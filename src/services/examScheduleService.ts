@@ -75,6 +75,8 @@ export class ExamScheduleService {
     return await this.examScheduleRepository.delete(id);
   }
 
+  // ================================== 拓展功能代码 ==================================
+
   /**
    * 批量创建考试安排
    * todo: 函数功能有问题，后续应该删除
@@ -187,7 +189,7 @@ export class ExamScheduleService {
     }
 
     const rooms = await this.examScheduleRepository.getAvailableRooms(exam_id);
-    
+
     // 计算总数
     const totalSeats = rooms.reduce((sum, room) => sum + room.total_seats, 0);
     const availableSeats = rooms.reduce((sum, room) => sum + room.remaining_seats, 0);
@@ -196,5 +198,18 @@ export class ExamScheduleService {
       total_seats: totalSeats,      // 总座位数
       remaining_seats: availableSeats  // 剩余座位数
     };
+  }
+
+  /**
+   * 获取考试所有考场安排信息
+   */
+  async getExamRoomsSchedule(exam_id: number) {
+    // 检查考试是否存在
+    const exam = await this.examScheduleRepository.getExamById(exam_id);
+    if (!exam[0]) {
+      throw new Error("考试不存在");
+    }
+
+    return await this.examScheduleRepository.getExamScheduleInfo(exam_id);
   }
 }

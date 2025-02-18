@@ -51,4 +51,10 @@ export class ExamRepository {
     const [result] = await pool.query('DELETE FROM Exam WHERE id = ?', [id]);
     return result;
   }
+
+  // 查询所有考试时间段（不重复）
+  async getAllTimeRanges() {
+    const [rows] = await pool.query('SELECT DISTINCT exam_time, duration FROM Exam');
+    return rows as { exam_time: string, duration: number }[];
+  }
 } 

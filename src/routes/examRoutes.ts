@@ -8,5 +8,7 @@ router.get('/', examController.getAllExams.bind(examController));
 router.post('/', examController.addExam.bind(examController));
 router.put('/:id', examController.updateExam.bind(examController));
 router.delete('/:id', examController.deleteExam.bind(examController));
+// 获取所有考试时间段列表
+router.get('/time_ranges', examController.getAllTimeRanges.bind(examController));
 
 export default router; 

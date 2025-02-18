@@ -42,6 +42,10 @@ export class ExamService {
     return await this.examRepository.delete(id);
   }
 
+  async getAllTimeRanges() {
+    return await this.examRepository.getAllTimeRanges();
+  }
+
   /**
    * 验证考试信息
    */

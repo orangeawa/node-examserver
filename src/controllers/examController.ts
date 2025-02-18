@@ -88,4 +88,16 @@ export class ExamController {
       res.json(errorResponse((error as Error).message));
     }
   };
+
+  /**
+   * 获取考试时间段列表
+   */
+  getAllTimeRanges = async (req: Request, res: Response) => {
+    try {
+      const timeRanges = await this.examService.getAllTimeRanges();
+      res.json(successResponse(timeRanges, 'success'));
+    } catch (error) {
+      res.json(errorResponse((error as Error).message));
+    }
+  }
 } 
